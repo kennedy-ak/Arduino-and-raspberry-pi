@@ -1,0 +1,49 @@
+
+import cv2
+import numpy as np
+
+
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_alt2.xml") #r"/home/kennedy/Desktop/haarcascades\haarcascade_frontalface_alt2.xml")
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")#r"/home/kennedy/Desktop/haarcascades/haarcascade_eye.xml")
+
+
+cap = cv2.VideoCapture(0)
+#address = "http://192.168.43.1:8080/video"
+#cap.open(address)
+while True:
+    # read the image from the cam
+    ret, image = cap.read()
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    text = "Active Driver"
+    coordinates = (100,100)
+    fontScale = 1
+    color = (255,0,255)
+    thickness = 2
+
+    gray= cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(image_gray, 1.3, 5)
+    for x, y, w, h in faces:
+        cv2.rectangle(image, (x, y), (x + w, y + h), color=(255, 0, 0), thickness=2)
+        image = cv2.putText(image, text, coordinates, font, fontScale, color, thickness, cv2.LINE_AA)
+
+        #cv2.putText(image , " face detected ",(90,190),font=)
+        roi_gray= gray[y:y+h,x:x+w]
+        roi_color = image[y:y+h,x:x+w]
+        #for i in range(2):
+            
+            #speak("face detected")
+        eyes = eye_cascade.detectMultiScale(roi_gray)
+        for (ex,ey,ew,eh) in eyes:
+            cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+            
+         
+                
+            
+            
+    cv2.imshow("detectin",image)
+    
+    if cv2.waitKey(1) == ord("q"):
+        break
+
+cap.release()
